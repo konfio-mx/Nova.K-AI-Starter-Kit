@@ -118,6 +118,20 @@ Check the [examples directory](examples/) for more details on each example.
 - [Key Concepts](docs/concepts.md): Understanding the core concepts of AI agents
 - [Advanced Usage](docs/advanced-usage.md): Taking your agents to the next level
 
+## :link: Sharing your localhost environment with other members
+- Only if really required, you may use https://localxpose.io/, which allows you to create up to 2 tunnels, which would only be relevant for n8n and Open Web UI.
+- Open a free account, follow the instructions to activate your key, by following instructions at https://localxpose.io/docs
+- Make sure you point to the right paths for Open Web UI
+```bash
+      loclx tunnel http --to localhost:3000
+```
+- And from another terminal for n8n
+```bash
+      loclx tunnel http --to localhost:5678
+```
+- Expand terminal window and copy the hashed xxxxxxxxxx.loclx.io url to share
+- Tunnels will expire after 6 hours, so you might need to close tunnels and run it again
+
 ## 🛠️ Troubleshooting
 
 Having issues? Check our [Troubleshooting Guide](docs/troubleshooting.md) or open an issue on this repository.

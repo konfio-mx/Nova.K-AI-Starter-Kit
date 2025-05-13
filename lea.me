@@ -118,6 +118,25 @@ Consulta el [directorio de ejemplos](examples/) para más detalles sobre cada un
 - [Conceptos Clave](docs/concepts.md): Entiende los fundamentos de los agentes de IA
 - [Uso Avanzado](docs/advanced-usage.md): Lleva tus agentes al siguiente nivel
 
+Aquí tienes la traducción al español, manteniendo el formato Markdown:
+
+## :link: Compartiendo tu entorno de localhost con otros miembros
+
+- Solo si es realmente necesario, puedes usar [https://localxpose.io/](https://localxpose.io/), que te permite crear hasta 2 túneles, lo cual sería útil únicamente para n8n y Open Web UI.
+- Abre una cuenta gratuita y sigue las instrucciones para activar tu clave en [https://localxpose.io/docs](https://localxpose.io/docs)
+- Asegúrate de apuntar a las rutas correctas para Open Web UI:
+```bash
+      loclx tunnel http --to localhost:3000
+
+	•	Y desde otra terminal para n8n:
+
+      loclx tunnel http --to localhost:5678
+
+	•	Expande la ventana de la terminal y copia la URL con hash del tipo xxxxxxxxxx.loclx.io para compartirla
+	•	Los túneles expirarán después de 6 horas, por lo que puede que necesites cerrarlos y ejecutarlos nuevamente
+
+¿Te gustaría que lo integre directamente a tu archivo `README_es_MX.md`?
+
 ## 🛠️ Resolución de Problemas
 
 ¿Tienes problemas? Consulta nuestra [Guía de Solución de Problemas](docs/troubleshooting.md) o abre un *issue* en este repositorio.

@@ -1,23 +1,23 @@
 # 🚀 Nova.K AI Agent Starter Kit
 
-Welcome to the Nova.K AI Agent Starter Kit! This project provides everything you need to start building powerful AI agents and workflows for various business scenarios, regardless of your technical background.
+Welcome to the Nova.K AI Agent and Automation Starter Kit! This project provides everything you need to start building powerful AI agents and workflow automations for various ideas and scenarios, regardless of your technical background.
 
 ![Nova.K Banner](docs/images/nova-k-banner.png)
 
 ## :key: Key Features
 
-- **Low-code Development**: Create agents without writing code using n8n's visual workflow editor
-- **Local LLM Processing**: Run AI models locally for privacy and cost savings
+- **Low-code Development**: Create agents without writing code using n8n's visual workflow editor - if not using CodeGPT Agents
+- **Local LLM Processing**: Run AI models locally for privacy and cost savings - Ollama, Deepseek, etc.
 - **Vector Search**: Implement semantic search and RAG patterns with Qdrant
-- **Extensible Architecture**: Add new capabilities through n8n nodes and integrations
+- **Extensible Architecture**: Add new capabilities through n8n nodes and integrations, like Google Drive, Sheets, Docs, Notion, Slack, and other APIs
 - **Comprehensive Examples**: Learn from working examples covering common use cases
 
 ## 📋 Overview
 
-This starter kit provides a complete environment for developing AI agents using:
+This starter kit provides a complete environment for developing integrations with AI agents and workflows using:
 
 - **n8n**: Low-code workflow automation platform with 400+ integrations and AI components
-- **Ollama**: Run powerful LLMs locally on your machine
+- **Ollama/deepseek**: Run powerful LLMs locally on your machine
 - **Open WebUI**: ChatGPT-like interface for interacting with your local models
 - **Qdrant**: Vector database for semantic search and retrieval
 - **PostgreSQL**: Reliable database for storing structured data
@@ -36,19 +36,15 @@ All components are pre-configured and ready to use through Docker, making setup 
       - You will also need `podman-compose`.
     - **OrbStack**: A fast, light, and easy way to run Docker containers and Linux machines on macOS.
       - Installation: [OrbStack Website](https://orbstack.dev/)
-- **Node.js**: (v18 or newer recommended)
-  - We recommend using [nvm (Node Version Manager)](https://github.com/nvm-sh/nvm) to install and manage Node.js versions.
-    - nvm installation: `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash` (or follow official instructions)
-    - Install Node.js: `nvm install --lts` (to install the latest LTS version)
-- **Taskfile**: A task runner / build tool.
-  - Installation: [Task Installation Guide](https://taskfile.dev/installation/) (e.g., `brew install go-task/tap/go-task` on macOS, `npm install -g @task/cli` for a Node.js based version, or download binary)
 - **Git**: To clone this repository.
   - Installation: [Git Downloads](https://git-scm.com/downloads)
-- **RAM**: 8GB+ RAM is recommended, especially for running Large Language Models (LLMs) locally. More RAM (16GB+) will provide a better experience.
+- **RAM**: 8GB+ RAM is recommended, especially for running Large Language Models (LLMs) locally. More RAM (16GB+) will provide a better experience. Or use CodeGPT for it.
 
 ## 🚀 Quick Start
 
 ### 1. Clone this repository
+
+Open your terminal, copy and paste the following commands.
 
 ```bash
 git clone https://github.com/konfio/nova-k-starter-kit.git
@@ -125,6 +121,8 @@ Check the [examples directory](examples/) for more details on each example.
 ## 🛠️ Troubleshooting
 
 Having issues? Check our [Troubleshooting Guide](docs/troubleshooting.md) or open an issue on this repository.
+
+For support and queries, use the #nova_k25_hachathon Slack channel.
 
 ## 🤝 Contributing
 

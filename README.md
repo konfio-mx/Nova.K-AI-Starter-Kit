@@ -2,7 +2,7 @@
 
 Welcome to the Nova.K AI Agent and Automation Starter Kit! This project provides everything you need to start building powerful AI agents and workflow automations for various ideas and scenarios, regardless of your technical background.
 
-![Nova.K Banner](docs/images/nova-k-banner.png)
+<img src="docs/nova_k.png" alt="Nova.K Banner" width="20%" />
 
 ## :key: Key Features
 

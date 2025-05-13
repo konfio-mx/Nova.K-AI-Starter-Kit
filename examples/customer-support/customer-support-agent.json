@@ -1,0 +1,239 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "customer-support",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=http://qdrant:6333/collections/support_kb/points/search",
+        "method": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "vector",
+              "value": "={{ $node[\"Generate Query Embedding\"].json.embedding }}"
+            },
+            {
+              "name": "limit",
+              "value": 5
+            },
+            {
+              "name": "with_payload",
+              "value": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "search_knowledge_base",
+      "name": "Search Knowledge Base",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        700,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama3",
+        "operation": "embedding",
+        "input": "={{ $json.query }}",
+        "options": {}
+      },
+      "id": "generate_query_embedding",
+      "name": "Generate Query Embedding",
+      "type": "n8n-nodes-base.ollama",
+      "typeVersion": 1,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extract relevant information from search results\nconst results = $input.json.result || [];\n\n// Format the context from retrieved documents\nlet context = '';\nlet sources = [];\n\nif (results && results.length > 0) {\n  results.forEach((item, index) => {\n    if (item.payload && item.payload.text) {\n      context += `Document ${index + 1}: ${item.payload.text}\\n\\n`;\n      \n      // Add to sources if we have source information\n      if (item.payload.source) {\n        sources.push({\n          title: item.payload.title || `Document ${index + 1}`,\n          url: item.payload.url || '',\n          source: item.payload.source\n        });\n      }\n    }\n  });\n}\n\nreturn {\n  context,\n  sources,\n  query: $input.first().json.query,\n  customer_id: $input.first().json.customer_id || 'unknown',\n  previous_interactions: $input.first().json.context?.previous_interactions || []\n};"
+      },
+      "id": "prepare_context",
+      "name": "Prepare Context",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        920,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama3",
+        "operation": "chat",
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a helpful customer support assistant for Konfío. Your goal is to provide accurate, helpful, and concise responses to customer inquiries. Use the provided context to answer questions, but don't mention the context directly in your response. If you don't know the answer or if the context doesn't contain relevant information, politely suggest escalating to a human agent. Be professional but friendly in your tone."
+            },
+            {
+              "role": "user",
+              "content": "=Context information:\n{{ $json.context }}\n\nCustomer question: {{ $json.query }}"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.7
+        }
+      },
+      "id": "generate_response",
+      "name": "Generate Response",
+      "type": "n8n-nodes-base.ollama",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Determine if the response requires human intervention\nconst responseText = $input.json.message.content;\nconst lowerResponse = responseText.toLowerCase();\n\n// Check for phrases indicating the AI couldn't answer\nconst needsHuman = [\n  \"escalate\",\n  \"human agent\",\n  \"customer service representative\",\n  \"i don't have enough information\",\n  \"i don't know\",\n  \"i'm not sure\",\n  \"cannot provide\",\n  \"unable to assist\"\n].some(phrase => lowerResponse.includes(phrase));\n\n// Calculate a simple confidence score\nlet confidence = 0.8; // Default confidence\nif (needsHuman) {\n  confidence = 0.3; // Low confidence if needs human\n}\n\nreturn {\n  response: responseText,\n  sources: $input.first().json.sources || [],\n  confidence,\n  requires_human: needsHuman,\n  customer_id: $input.first().json.customer_id || 'unknown'\n};"
+      },
+      "id": "format_response",
+      "name": "Format Response",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "response",
+              "value": "={{ $json.response }}"
+            }
+          ],
+          "number": [
+            {
+              "name": "confidence",
+              "value": "={{ $json.confidence }}"
+            }
+          ],
+          "boolean": [
+            {
+              "name": "requires_human",
+              "value": "={{ $json.requires_human }}"
+            }
+          ],
+          "array": [
+            {
+              "name": "sources",
+              "value": "={{ $json.sources }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set",
+      "name": "Set",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.2,
+      "position": [
+        1580,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "webhook": {
+      "main": [
+        [
+          {
+            "node": "generate_query_embedding",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "search_knowledge_base": {
+      "main": [
+        [
+          {
+            "node": "prepare_context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate_query_embedding": {
+      "main": [
+        [
+          {
+            "node": "search_knowledge_base",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "prepare_context": {
+      "main": [
+        [
+          {
+            "node": "generate_response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate_response": {
+      "main": [
+        [
+          {
+            "node": "format_response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "format_response": {
+      "main": [
+        [
+          {
+            "node": "set",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

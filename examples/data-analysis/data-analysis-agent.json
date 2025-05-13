@@ -1,0 +1,323 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "data-analysis",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extract data source information\nconst input = $input.first().json;\nconst dataSource = input.data_source || {};\n\n// Handle different data source types\nlet dataConfig = {};\n\nswitch(dataSource.type) {\n  case 'csv':\n    dataConfig = {\n      type: 'csv',\n      path: dataSource.path,\n      delimiter: dataSource.delimiter || ','\n    };\n    break;\n    \n  case 'database':\n    dataConfig = {\n      type: 'database',\n      query: dataSource.query,\n      connection: dataSource.connection || 'default'\n    };\n    break;\n    \n  case 'api':\n    dataConfig = {\n      type: 'api',\n      url: dataSource.url,\n      method: dataSource.method || 'GET',\n      headers: dataSource.headers || {}\n    };\n    break;\n    \n  default:\n    throw new Error(`Unsupported data source type: ${dataSource.type}`);\n}\n\nreturn {\n  dataConfig,\n  analysisType: input.analysis_type || 'general',\n  timePeriod: input.time_period,\n  outputFormat: input.output_format || 'json',\n  question: input.question || null\n};"
+      },
+      "id": "parse_request",
+      "name": "Parse Request",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.dataConfig.type }}",
+              "operation": "equal",
+              "value2": "csv"
+            }
+          ]
+        }
+      },
+      "id": "if_csv",
+      "name": "If CSV",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        700,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "filePath": "={{ $json.dataConfig.path }}"
+      },
+      "id": "read_csv",
+      "name": "Read CSV",
+      "type": "n8n-nodes-base.readBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        920,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "csv",
+      "name": "CSV",
+      "type": "n8n-nodes-base.csv",
+      "typeVersion": 3,
+      "position": [
+        1140,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.dataConfig.type }}",
+              "operation": "equal",
+              "value2": "database"
+            }
+          ]
+        }
+      },
+      "id": "if_database",
+      "name": "If Database",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        920,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ $json.dataConfig.query }}"
+      },
+      "id": "postgres",
+      "name": "Postgres",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        400
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Process data based on source type\nlet data;\n\nif ($node[\"CSV\"].json) {\n  // CSV data\n  data = $node[\"CSV\"].json;\n} else if ($node[\"Postgres\"].json) {\n  // Database data\n  data = $node[\"Postgres\"].json;\n} else {\n  // Default empty data\n  data = [];\n}\n\n// Prepare data summary\nconst summary = {\n  rowCount: data.length,\n  columns: data.length > 0 ? Object.keys(data[0]) : [],\n  sampleData: data.slice(0, 5)\n};\n\nreturn {\n  data,\n  summary,\n  analysisType: $input.first().json.analysisType,\n  timePeriod: $input.first().json.timePeriod,\n  outputFormat: $input.first().json.outputFormat,\n  question: $input.first().json.question\n};"
+      },
+      "id": "prepare_data",
+      "name": "Prepare Data",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama3",
+        "operation": "chat",
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a data analysis assistant. Your task is to analyze data and provide insights based on the data provided. Be thorough, accurate, and provide clear explanations of your findings. If asked a specific question about the data, focus on answering that question directly."
+            },
+            {
+              "role": "user",
+              "content": "=I have the following dataset:\n\nData Summary:\n{{ JSON.stringify($json.summary, null, 2) }}\n\n{% if $json.question %}\nPlease answer this question about the data: {{ $json.question }}\n{% else %}\nPlease analyze this data and provide insights. The analysis type is: {{ $json.analysisType }}{% if $json.timePeriod %} for the time period: {{ $json.timePeriod }}{% endif %}.\n\nInclude the following in your analysis:\n1. Key statistics and metrics\n2. Notable trends or patterns\n3. Anomalies or outliers\n4. Actionable insights\n5. Recommendations based on the data\n{% endif %}"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "id": "analyze_data",
+      "name": "Analyze Data",
+      "type": "n8n-nodes-base.ollama",
+      "typeVersion": 1,
+      "position": [
+        1580,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Format the analysis based on requested output format\nconst analysis = $input.json.message.content;\nconst outputFormat = $input.first().json.outputFormat;\n\nlet formattedOutput;\n\nswitch(outputFormat) {\n  case 'json':\n    // Convert analysis to structured JSON\n    formattedOutput = {\n      analysis: analysis,\n      data_summary: $input.first().json.summary,\n      metadata: {\n        analysis_type: $input.first().json.analysisType,\n        time_period: $input.first().json.timePeriod,\n        row_count: $input.first().json.summary.rowCount,\n        generated_at: new Date().toISOString()\n      }\n    };\n    break;\n    \n  case 'html':\n    // Format as HTML report\n    formattedOutput = `\n      <!DOCTYPE html>\n      <html>\n      <head>\n        <title>Data Analysis Report</title>\n        <style>\n          body { font-family: Arial, sans-serif; margin: 40px; }\n          h1 { color: #2c3e50; }\n          .section { margin-bottom: 30px; }\n          .metadata { color: #7f8c8d; font-size: 0.9em; }\n          pre { background-color: #f8f9fa; padding: 15px; border-radius: 5px; }\n        </style>\n      </head>\n      <body>\n        <h1>Data Analysis Report</h1>\n        <div class=\"metadata\">\n          <p>Analysis Type: ${$input.first().json.analysisType}</p>\n          <p>Time Period: ${$input.first().json.timePeriod || 'Not specified'}</p>\n          <p>Row Count: ${$input.first().json.summary.rowCount}</p>\n          <p>Generated: ${new Date().toLocaleString()}</p>\n        </div>\n        <div class=\"section\">\n          ${analysis.replace(/\\n/g, '<br>')}\n        </div>\n      </body>\n      </html>\n    `;\n    break;\n    \n  case 'markdown':\n  default:\n    // Format as markdown\n    formattedOutput = `# Data Analysis Report\n\n## Metadata\n- **Analysis Type:** ${$input.first().json.analysisType}\n- **Time Period:** ${$input.first().json.timePeriod || 'Not specified'}\n- **Row Count:** ${$input.first().json.summary.rowCount}\n- **Generated:** ${new Date().toLocaleString()}\n\n## Analysis\n\n${analysis}\n`;\n    break;\n}\n\nreturn { output: formattedOutput };"
+      },
+      "id": "format_output",
+      "name": "Format Output",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1800,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "output",
+              "value": "={{ $json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set",
+      "name": "Set",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.2,
+      "position": [
+        2020,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "webhook": {
+      "main": [
+        [
+          {
+            "node": "parse_request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parse_request": {
+      "main": [
+        [
+          {
+            "node": "if_csv",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if_csv": {
+      "main": [
+        [
+          {
+            "node": "read_csv",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "if_database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "read_csv": {
+      "main": [
+        [
+          {
+            "node": "csv",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "csv": {
+      "main": [
+        [
+          {
+            "node": "prepare_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if_database": {
+      "main": [
+        [
+          {
+            "node": "postgres",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "prepare_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "postgres": {
+      "main": [
+        [
+          {
+            "node": "prepare_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "prepare_data": {
+      "main": [
+        [
+          {
+            "node": "analyze_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "analyze_data": {
+      "main": [
+        [
+          {
+            "node": "format_output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "format_output": {
+      "main": [
+        [
+          {
+            "node": "set",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

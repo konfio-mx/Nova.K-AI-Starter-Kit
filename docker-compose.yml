@@ -1,0 +1,99 @@
+services:
+  # n8n - Workflow Automation Platform
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: nova-k-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=${N8N_HOST:-localhost}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=${N8N_PROTOCOL:-http}
+      - N8N_EDITOR_BASE_URL=${N8N_EDITOR_BASE_URL:-http://localhost:5678}
+      - NODE_ENV=production
+      - N8N_LOG_LEVEL=${N8N_LOG_LEVEL:-info}
+      - WEBHOOK_URL=${WEBHOOK_URL:-http://localhost:5678/}
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=postgres
+      - DB_POSTGRESDB_PASSWORD=postgres
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY:-your-secret-key}
+      - EXECUTIONS_PROCESS=main
+      - EXECUTIONS_MODE=regular
+      - N8N_DIAGNOSTICS_ENABLED=false
+      - N8N_VERSION_NOTIFICATIONS_ENABLED=false
+      - N8N_HIRING_BANNER_ENABLED=false
+      - N8N_TEMPLATES_ENABLED=true
+      - N8N_TEMPLATES_HOST=https://api.n8n.io/
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE:-America/Mexico_City}
+    volumes:
+      - ./services/n8n/data:/home/node/.n8n
+    depends_on:
+      - postgres
+    networks:
+      - nova-k-network
+
+  # Ollama - Local LLM Server
+  ollama:
+    image: ollama/ollama:latest
+    container_name: nova-k-ollama
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:11434:11434"
+    volumes:
+      - ./services/ollama/data:/root/.ollama
+    networks:
+      - nova-k-network
+
+  # Open WebUI - UI for Ollama
+  openwebui:
+    image: ghcr.io/open-webui/open-webui:latest
+    container_name: nova-k-openwebui
+    restart: unless-stopped
+    ports:
+      - "3000:8080"
+    environment:
+      - OLLAMA_API_BASE_URL=http://ollama:11434/api
+      - WEBUI_AUTH=false
+    volumes:
+      - ./services/openwebui/data:/app/backend/data
+    depends_on:
+      - ollama
+    networks:
+      - nova-k-network
+
+  # Qdrant - Vector Database
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: nova-k-qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - ./services/qdrant/data:/qdrant/storage
+    networks:
+      - nova-k-network
+
+  # PostgreSQL - Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: nova-k-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=n8n
+    volumes:
+      - ./services/postgres/data:/var/lib/postgresql/data
+    networks:
+      - nova-k-network
+
+networks:
+  nova-k-network:
+    driver: bridge

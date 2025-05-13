@@ -1,0 +1,62 @@
+version: "3"
+
+dotenv:
+  - .env
+
+tasks:
+  setup:
+    cmds:
+      - task: pull-models
+      - task: setup-env
+
+  start:
+    desc: Start all services
+    aliases:
+      - up
+      - run
+    cmds:
+      - docker-compose up -d
+      - echo "Services started! Access n8n at http://localhost:5678"
+
+  stop:
+    desc: Stop all services
+    cmds:
+      - docker-compose down
+
+  restart:
+    desc: Restart all services
+    cmds:
+      - docker-compose restart
+
+  logs:
+    desc: Show logs from all services
+    cmds:
+      - docker-compose logs -f
+
+  n8n-logs:
+    desc: Show logs from n8n service
+    cmds:
+      - docker-compose logs -f n8n
+
+  ollama-logs:
+    desc: Show logs from ollama service
+    cmds:
+      - docker-compose logs -f ollama
+
+  pull-models:
+    desc: Pull recommended LLM models for Ollama
+    cmds:
+      - docker-compose exec ollama ollama pull llama3
+      - docker-compose exec ollama ollama pull mistral
+
+  clean:
+    desc: Remove all containers and volumes
+    cmds:
+      - docker-compose down -v
+      - echo "All containers and volumes removed"
+
+  setup-env:
+    desc: Create .env file from example
+    cmds:
+      - cp .env.example .env
+      - echo ".env file created from example"

@@ -1,0 +1,237 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "document-qa",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama3",
+        "operation": "embedding",
+        "input": "={{ $json.question }}",
+        "options": {}
+      },
+      "id": "generate_question_embedding",
+      "name": "Generate Question Embedding",
+      "type": "n8n-nodes-base.ollama",
+      "typeVersion": 1,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=http://qdrant:6333/collections/documents/points/search",
+        "method": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "vector",
+              "value": "={{ $node[\"Generate Question Embedding\"].json.embedding }}"
+            },
+            {
+              "name": "limit",
+              "value": "={{ $json.max_results || 5 }}"
+            },
+            {
+              "name": "with_payload",
+              "value": true
+            },
+            {
+              "name": "filter",
+              "value": "={{ $json.document_ids && $json.document_ids.length > 0 ? {\"must\": [{\"key\": \"document_id\", \"match\": {\"any\": $json.document_ids}}]} : {} }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "search_documents",
+      "name": "Search Documents",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        700,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extract relevant information from search results\nconst results = $input.json.result || [];\n\n// Format the context from retrieved documents\nlet context = '';\nlet sources = [];\n\nif (results && results.length > 0) {\n  results.forEach((item, index) => {\n    if (item.payload && item.payload.text) {\n      context += `Document ${index + 1}: ${item.payload.text}\\n\\n`;\n      \n      // Add to sources\n      sources.push({\n        document_id: item.payload.document_id || 'unknown',\n        document_title: item.payload.document_title || 'Unknown Document',\n        page: item.payload.page || null,\n        text: item.payload.text.substring(0, 200) + '...'\n      });\n    }\n  });\n}\n\nreturn {\n  context,\n  sources,\n  question: $input.first().json.question,\n  conversation_id: $input.first().json.conversation_id || null\n};"
+      },
+      "id": "prepare_context",
+      "name": "Prepare Context",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        920,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama3",
+        "operation": "chat",
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a helpful document assistant. Your task is to answer questions based on the provided document context. If the context doesn't contain the information needed to answer the question, say that you don't have enough information. Always base your answers on the provided context and be specific about where the information comes from. If you quote or reference specific information, mention which document it's from."
+            },
+            {
+              "role": "user",
+              "content": "=Context information:\n{{ $json.context }}\n\nQuestion: {{ $json.question }}"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "id": "generate_answer",
+      "name": "Generate Answer",
+      "type": "n8n-nodes-base.ollama",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Determine confidence based on response\nconst responseText = $input.json.message.content;\nconst lowerResponse = responseText.toLowerCase();\n\n// Check for phrases indicating the AI couldn't answer\nconst lowConfidence = [\n  \"i don't have enough information\",\n  \"i don't know\",\n  \"i'm not sure\",\n  \"cannot provide\",\n  \"unable to assist\",\n  \"not mentioned in the context\",\n  \"not specified in the documents\"\n].some(phrase => lowerResponse.includes(phrase));\n\n// Calculate confidence score\nlet confidence = lowConfidence ? 0.3 : 0.85;\n\nreturn {\n  answer: responseText,\n  sources: $input.first().json.sources || [],\n  confidence,\n  conversation_id: $input.first().json.conversation_id || null\n};"
+      },
+      "id": "format_answer",
+      "name": "Format Answer",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "answer",
+              "value": "={{ $json.answer }}"
+            }
+          ],
+          "number": [
+            {
+              "name": "confidence",
+              "value": "={{ $json.confidence }}"
+            }
+          ],
+          "array": [
+            {
+              "name": "sources",
+              "value": "={{ $json.sources }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set",
+      "name": "Set",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.2,
+      "position": [
+        1580,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "webhook": {
+      "main": [
+        [
+          {
+            "node": "generate_question_embedding",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate_question_embedding": {
+      "main": [
+        [
+          {
+            "node": "search_documents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "search_documents": {
+      "main": [
+        [
+          {
+            "node": "prepare_context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "prepare_context": {
+      "main": [
+        [
+          {
+            "node": "generate_answer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate_answer": {
+      "main": [
+        [
+          {
+            "node": "format_answer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "format_answer": {
+      "main": [
+        [
+          {
+            "node": "set",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

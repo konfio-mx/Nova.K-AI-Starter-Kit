@@ -1,3 +1,4 @@
+# English
 # 🚀 Nova.K AI Agent Starter Kit
 
 Welcome to the Nova.K AI Agent and Automation Starter Kit! This project provides everything you need to start building powerful AI agents and workflow automations for various ideas and scenarios, regardless of your technical background.
@@ -145,3 +146,160 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+# Español
+# 🚀 Kit de Inicio para Agentes de IA Nova.K
+
+¡Bienvenid@ al Kit de Inicio para Agentes de IA y Automatización de Nova.K! Este proyecto te proporciona todo lo necesario para comenzar a construir potentes agentes de inteligencia artificial y automatizaciones de flujo de trabajo para diferentes ideas y escenarios, sin importar tu nivel técnico.
+
+<img src="docs/nova_k.png" alt="Nova.K Banner" width="20%" />
+
+##:key: Características Principales
+
+**Desarrollo Low-code**: Crea agentes sin escribir código usando el editor visual de flujos de trabajo de n8n — si no usas agentes con CodeGPT.
+**Procesamiento Local de LLMs**: Ejecuta modelos de IA localmente para mayor privacidad y ahorro de costos — como con Ollama o Deepseek.
+**Búsqueda Vectorial**: Implementa búsqueda semántica y patrones RAG con Qdrant.
+**Arquitectura Extensible**: Agrega nuevas capacidades a través de nodos e integraciones de n8n como Google Drive, Sheets, Docs, Notion, Slack y muchas otras APIs.
+**Ejemplos Completos**: Aprende con ejemplos funcionales que cubren casos de uso comunes.
+
+## 📋 Descripción General
+
+Este kit de inicio proporciona un entorno completo para desarrollar integraciones con agentes de IA y flujos de trabajo usando:
+
+- **n8n**: Plataforma de automatización low-code con más de 400 integraciones y componentes de IA.
+- **Ollama/Deepseek**: Ejecuta modelos LLM potentes localmente en tu máquina.
+- **Open WebUI**: Interfaz estilo ChatGPT para interactuar con tus modelos locales.
+- **Qdrant**: Base de datos vectorial para búsqueda semántica y recuperación de información.
+- **PostgreSQL**: Base de datos confiable para almacenar datos estructurados.
+
+Todos los componentes ya vienen preconfigurados y listos para usarse a través de Docker, facilitando la instalación sin importar tu experiencia técnica.
+
+## 🔧 Requisitos Previos
+
+- **Docker** (o un runtime de contenedores compatible):
+  - **Docker Desktop**: Recomendado para la mayoría en Windows, macOS y Linux.
+    - Instalación: [Descargar Docker Desktop](https://www.docker.com/products/docker-desktop/)
+    - Docker Compose usualmente ya viene incluido.
+  - **Alternativas**:
+    - **Podman**: Motor de contenedores sin demonio.
+      - Instalación: [Guía de instalación de Podman](https://podman.io/docs/installation)
+      - También necesitarás `podman-compose`.
+    - **OrbStack**: Forma rápida y ligera de correr contenedores Docker y máquinas Linux en macOS.
+      - Instalación: [Sitio web de OrbStack](https://orbstack.dev/)
+- **Git**: Para clonar este repositorio.
+  - Instalación: [Descargar Git](https://git-scm.com/downloads)
+- **Memoria RAM**: Se recomienda al menos 8GB, especialmente si vas a correr LLMs localmente. Con 16GB o más tendrás una mejor experiencia. O bien, usa CodeGPT para ello.
+
+## 🚀 Inicio Rápido
+
+### 1. Clona este repositorio
+
+Abre tu terminal y copia/pega los siguientes comandos:
+
+```bash
+git clone https://github.com/konfio/nova-k-starter-kit.git
+cd nova-k-starter-kit
+```
+
+### 2. Inicia los servicios
+
+Usando Task (recomendado):
+
+```bash
+task start
+```
+
+### 3. Accede a los servicios
+
+Una vez que todos los servicios estén corriendo, podrás acceder a:
+
+- **n8n**: [http://localhost:5678](http://localhost:5678)
+- **Open WebUI**: [http://localhost:3000](http://localhost:3000)
+- **Dashboard de Qdrant**: [http://localhost:6333/dashboard](http://localhost:6333/dashboard)
+
+### 4. Crea tu primer agente
+
+Sigue nuestro [Tutorial del Primer Agente](docs/first-agent.md) para tener tu primer agente de IA en minutos.
+
+## 📚 ¿Qué Incluye?
+
+- **Entorno Docker preconfigurado** con todos los servicios necesarios
+- **Flujos de trabajo de ejemplo** para escenarios comunes con agentes de IA
+- **Tutoriales paso a paso** para construir distintos tipos de agentes
+- **Plantillas de integración** para conectar con distintas fuentes de datos
+- **Mejores prácticas** para el desarrollo de agentes de IA
+
+## 🗂️ Estructura del Proyecto
+
+```bash
+nova-k-starter-kit/
+├── docker-compose.yml       # Configuración de Docker para todos los servicios
+├── Taskfile.yml             # Automatización de tareas comunes
+├── .env.example             # Variables de entorno de ejemplo
+├── services/                # Configuraciones específicas por servicio
+│   ├── n8n/                 # Configuración y flujos de trabajo de n8n
+│   ├── ollama/              # Modelos y configuración de Ollama
+│   ├── openwebui/           # Configuración de Open WebUI
+│   └── qdrant/              # Configuración de la base de datos vectorial Qdrant
+├── examples/                # Ejemplos de flujos de trabajo y agentes
+│   ├── customer-support/    # Ejemplo de agente de soporte al cliente
+│   ├── data-analysis/       # Ejemplo de agente de análisis de datos
+│   └── document-qa/         # Ejemplo de agente para preguntas sobre documentos
+└── docs/                    # Documentación
+    ├── images/              # Imágenes para la documentación
+    ├── first-agent.md       # Tutorial de inicio
+    ├── concepts.md          # Explicación de conceptos clave
+    └── advanced-usage.md    # Guías de uso avanzado
+```
+
+## 🧩 Agentes de Ejemplo
+
+Este kit incluye varios agentes de ejemplo para ayudarte a empezar:
+
+1. **Agente de Soporte al Cliente**: Responde preguntas usando tu base de conocimiento.
+2. **Agente de Análisis de Datos**: Analiza datos de distintas fuentes y genera insights.
+3. **Agente de Q&A de Documentos**: Responde preguntas basadas en contenido documental.
+
+Consulta el [directorio de ejemplos](examples/) para más detalles sobre cada uno.
+
+## 📖 Documentación
+
+- [Tutorial del Primer Agente](docs/first-agent.md): Guía paso a paso para crear tu primer agente
+- [Conceptos Clave](docs/concepts.md): Entiende los fundamentos de los agentes de IA
+- [Uso Avanzado](docs/advanced-usage.md): Lleva tus agentes al siguiente nivel
+
+Aquí tienes la traducción al español, manteniendo el formato Markdown:
+
+## :link: Compartiendo tu entorno de localhost con otros miembros
+
+- Solo si es realmente necesario, puedes usar [https://localxpose.io/](https://localxpose.io/), que te permite crear hasta 2 túneles, lo cual sería útil únicamente para n8n y Open Web UI.
+- Abre una cuenta gratuita y sigue las instrucciones para activar tu clave en [https://localxpose.io/docs](https://localxpose.io/docs)
+- Asegúrate de apuntar a las rutas correctas para Open Web UI:
+
+```bash
+      loclx tunnel http --to localhost:3000
+```
+ -	Y desde otra terminal para n8n:
+```bash
+      loclx tunnel http --to localhost:5678
+```
+- Expande la ventana de la terminal y copia la URL con hash del tipo xxxxxxxxxx.loclx.io para compartirla
+- Los túneles expirarán después de 6 horas, por lo que puede que necesites cerrarlos y ejecutarlos nuevamente
+
+¿Te gustaría que lo integre directamente a tu archivo `README_es_MX.md`?
+
+## 🛠️ Resolución de Problemas
+
+¿Tienes problemas? Consulta nuestra [Guía de Solución de Problemas](docs/troubleshooting.md) o abre un *issue* en este repositorio.
+
+Para soporte y dudas, usa el canal de Slack `#nova_k25_hachathon`.
+
+## 🤝 Contribuciones
+
+¡Contribuciones son bienvenidas! No dudes en enviar un Pull Request.
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT — consulta el archivo [LICENSE](LICENSE) para más detalles.

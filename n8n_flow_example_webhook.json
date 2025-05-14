@@ -1,0 +1,224 @@
+{
+  "name": "Thistledown Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Local RAG AI Agent with Chat Interface",
+        "height": 527,
+        "width": 1069
+      },
+      "id": "b52fb843-bbed-443a-b40d-73e2ba1515aa",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "535414eb-cc0a-42df-895f-af2d31544fac",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        60,
+        120
+      ],
+      "webhookId": "4b3b1838-d6b3-447e-9d79-d0931eddb9f8"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"output\": \"{{ $json.output }}\"\n}",
+        "options": {}
+      },
+      "id": "b21463a8-ea59-4d85-b565-83b34b358b2c",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        880,
+        120
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "invoke_codegpt_agent_thistledown",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "5fb71ccc-3422-4bcb-a956-109b3132ad2e",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        60,
+        300
+      ],
+      "webhookId": "4a839da9-b8a2-45f8-bcaf-c484f9a5912d"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "75ebfdef-c8e2-4c3e-b716-1479d0cc2a73",
+              "name": "chatInput",
+              "value": "={{ $json?.chatInput || $json.body.chatInput }}",
+              "type": "string"
+            },
+            {
+              "id": "59b7a20f-0626-4861-93e2-015d430c266e",
+              "name": "sessionId",
+              "value": "={{ $json?.sessionId || $json.body.sessionId}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "809dcf7f-1f10-4aae-a575-3bc3ee34316b",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        260,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.codegpt.co/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "CodeGPT-Org-Id",
+              "value": "f2f944b1-eb90-4db2-b0a4-1dc7e315718c"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "authorization",
+              "value": "Bearer sk-f58ceb69-58b7-46f7-9983-78393b1c7059"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"agentId\": \"e29d69cf-fdb1-419f-877f-f47a2797a060\",\n  \"messages\": [\n    {\n      \"content\": \"{{ $json?.chatInput || $json.body.chatInput }}\",\n      \"role\": \"user\"\n    }\n  ],\n  \"format\": \"json\",\n  \"stream\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        460,
+        120
+      ],
+      "id": "73e9ce66-0475-4050-abc8-e11d697a9d12",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const cleanOutput = $input.first().json.choices[0].message.content\n  .replace(/\\\\/g, '\\\\\\\\')      // escape backslashes\n  .replace(/\"/g, '\\\\\"')        // escape quotes\n  .replace(/\\n/g, '\\\\n');      // escape newlines\n\nreturn [\n  {\n    json: {\n      output: cleanOutput\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        120
+      ],
+      "id": "9a86b81b-cb87-4c1e-b82c-c66299c9d613",
+      "name": "Code - Format Response"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code - Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Format Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "df368e34-5d24-4f9f-93f7-1f871ec1230c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cccc2f737c7c43e7bf9c2a25b43572b3d362c4a47649caccf85ae83a43f3d66a"
+  },
+  "id": "Z2qmRLQSZmmFHPc8",
+  "tags": [
+    {
+      "createdAt": "2025-05-06T13:10:38.144Z",
+      "updatedAt": "2025-05-06T13:10:38.144Z",
+      "id": "M2zMvNws7mkFjcO0",
+      "name": "codegpt"
+    }
+  ]
+}

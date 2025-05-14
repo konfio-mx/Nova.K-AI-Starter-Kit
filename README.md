@@ -119,6 +119,45 @@ Check the [examples directory](examples/) for more details on each example.
 - [Key Concepts](docs/concepts.md): Understanding the core concepts of AI agents
 - [Advanced Usage](docs/advanced-usage.md): Taking your agents to the next level
 
+## :speech_balloon: Integrating Open Web UI with your n8n Workflow and/or agent
+- Copy this Python file code [n8n.py](n8n.py)
+- Go to your profile (must be admin) in Open Web UI [http://localhost:3000](http://localhost:3000)
+- Click on Settings
+- Go to Admin Settings
+- On top menu, click on Functions
+- Click on "+" at the top right to add new Function
+- Provide a name and description for the Function
+- Replace all code, with the Python code you copied from [n8n.py](n8n.py)
+- Replace the line of the code with your N8N webhook name to your production URL from n8n workflow
+  ```python
+    default="http://host.docker.internal:5678/webhook/{your N8N webhook name}"
+  ```
+  ```python
+    i.e. default="http://host.docker.internal:5678/webhook/incoming_request_for_my_agent_and_workflow"
+  ```
+- Replace the temporary request message for your agent name
+ ```python
+  -> Optional[dict]:
+        await self.emit_status(
+            __event_emitter__,
+            "info",
+            "/Calling N8N Workflow for {Your CodeGPT Agent Name}...",
+            False,
+        )
+```
+```python
+  -> Optional[dict]:
+        await self.emit_status(
+            __event_emitter__,
+            "info",
+            "/Calling N8N Workflow for My Agent Name...",
+            False,
+        )
+```
+- Click Save at the bottom right
+- On the top right, click on enable function dial to activate model in Open Web UI
+- Now you can start a new chat, and select in the top left the Model
+
 ## :link: Sharing your localhost environment with other members
 - Only if really required, you may use https://localxpose.io/, which allows you to create up to 2 tunnels, which would only be relevant for n8n and Open Web UI.
 - Open a free account, follow the instructions to activate your key, by following instructions at https://localxpose.io/docs

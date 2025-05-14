@@ -27,19 +27,9 @@ All components are pre-configured and ready to use through Docker, making setup 
 
 ## 🔧 Prerequisites
 
-- **Docker** (or a compatible container runtime):
-  - **Docker Desktop**: Recommended for most users on Windows, macOS, and Linux.
-    - Installation: [Download Docker Desktop](https://www.docker.com/products/docker-desktop/)
-    - Docker Compose is typically included with Docker Desktop.
-  - **Alternatives**:
-    - **Podman**: A daemonless container engine.
-      - Installation: [Podman Installation Guide](https://podman.io/docs/installation)
-      - You will also need `podman-compose`.
-    - **OrbStack**: A fast, light, and easy way to run Docker containers and Linux machines on macOS.
-      - Installation: [OrbStack Website](https://orbstack.dev/)
-- **Git**: To clone this repository.
-  - Installation: [Git Downloads](https://git-scm.com/downloads)
-- **RAM**: 8GB+ RAM is recommended, especially for running Large Language Models (LLMs) locally. More RAM (16GB+) will provide a better experience. Or use CodeGPT for it.
+- **RAM**: 8GB+ RAM is recommended, especially for running Large Language Models (LLMs) locally. More RAM (16GB+) will provide a better experience.
+
+That's it! Our automated setup script will install all other dependencies for you.
 
 ## 🚀 Quick Start
 
@@ -52,15 +42,31 @@ git clone https://github.com/konfio/nova-k-starter-kit.git
 cd nova-k-starter-kit
 ```
 
-### 2. Start the services
+### 2. Run the setup script
 
-Using Task (recommended):
+#### On macOS
+
+```bash
+# Open Terminal and run:
+./scripts/setup.sh
+```
+
+#### On Windows
+
+```bash
+# Open PowerShell and run:
+bash ./scripts/setup.sh
+```
+
+The setup script will automatically install all required dependencies (Git, Docker, mise, Task) and configure your environment.
+
+### 3. Start the services
 
 ```bash
 task start
 ```
 
-### 3. Access the services
+### 4. Access the services
 
 Once all services are running, you can access them at:
 

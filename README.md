@@ -1,5 +1,31 @@
-# English
+<div align="center">
+  <br />
+  <img src="https://cdn.konfio.mx/static/icons/icon-144x144.png" width="144" alt="Konfío Logo" />
+  <br />
+  <br />
+  <h1>🚀 Nova.K AI Agent Starter Kit</h1>
+</div>
+
+<div align="center">
+<br />
+
+![konf.io](https://img.shields.io/badge/IO-KONF?style=for-the-badge&label=KONF&labelColor=732ed5&color=f5f5f5)
+
+![docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=black)
+![n8n](https://img.shields.io/badge/n8n-EA4B71?style=for-the-badge&logo=n8n&logoColor=white)
+![ollama](https://img.shields.io/badge/Ollama-white?style=for-the-badge&logo=ollama&logoColor=black)
+![openwebui](https://img.shields.io/badge/Open%20WebUI-black?style=for-the-badge&logo=web-ui&logoColor=white
+)
+
+<br />
+</div>
+
+---
+
+
 # 🚀 Nova.K AI Agent Starter Kit
+
+> ## Leer versión en [Español](#español)
 
 Welcome to the Nova.K AI Agent and Automation Starter Kit! This project provides everything you need to start building powerful AI agents and workflow automations for various ideas and scenarios, regardless of your technical background.
 
@@ -165,16 +191,21 @@ Check the [examples directory](examples/) for more details on each example.
 - Now you can start a new chat, and select in the top left the Model
 
 ## :link: Sharing your localhost environment with other members
-- Only if really required, you may use https://localxpose.io/, which allows you to create up to 2 tunnels, which would only be relevant for n8n and Open Web UI.
-- Open a free account, follow the instructions to activate your key, by following instructions at https://localxpose.io/docs
+
+- Only if really required, you may use <https://localxpose.io/>, which allows you to create up to 2 tunnels, which would only be relevant for n8n and Open Web UI.
+- Open a free account, follow the instructions to activate your key, by following instructions at <https://localxpose.io/docs>
 - Make sure you point to the right paths for Open Web UI
+
 ```bash
       loclx tunnel http --to localhost:3000
 ```
+
 - And from another terminal for n8n
+
 ```bash
       loclx tunnel http --to localhost:5678
 ```
+
 - Expand terminal window and copy the hashed xxxxxxxxxx.loclx.io url to share
 - Tunnels will expire after 6 hours, so you might need to close tunnels and run it again
 
@@ -194,14 +225,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-# Español
+## Español
+
 # 🚀 Kit de Inicio para Agentes de IA Nova.K
 
 ¡Bienvenid@ al Kit de Inicio para Agentes de IA y Automatización de Nova.K! Este proyecto te proporciona todo lo necesario para comenzar a construir potentes agentes de inteligencia artificial y automatizaciones de flujo de trabajo para diferentes ideas y escenarios, sin importar tu nivel técnico.
 
 <img src="docs/nova_k.png" alt="Nova.K Banner" width="20%" />
 
-##:key: Características Principales
+## :key: Características Principales
 
 **Desarrollo Low-code**: Crea agentes sin escribir código usando el editor visual de flujos de trabajo de n8n — si no usas agentes con CodeGPT.
 **Procesamiento Local de LLMs**: Ejecuta modelos de IA localmente para mayor privacidad y ahorro de costos — como con Ollama o Deepseek.
@@ -223,18 +255,6 @@ Todos los componentes ya vienen preconfigurados y listos para usarse a través d
 
 ## 🔧 Requisitos Previos
 
-- **Docker** (o un runtime de contenedores compatible):
-  - **Docker Desktop**: Recomendado para la mayoría en Windows, macOS y Linux.
-    - Instalación: [Descargar Docker Desktop](https://www.docker.com/products/docker-desktop/)
-    - Docker Compose usualmente ya viene incluido.
-  - **Alternativas**:
-    - **Podman**: Motor de contenedores sin demonio.
-      - Instalación: [Guía de instalación de Podman](https://podman.io/docs/installation)
-      - También necesitarás `podman-compose`.
-    - **OrbStack**: Forma rápida y ligera de correr contenedores Docker y máquinas Linux en macOS.
-      - Instalación: [Sitio web de OrbStack](https://orbstack.dev/)
-- **Git**: Para clonar este repositorio.
-  - Instalación: [Descargar Git](https://git-scm.com/downloads)
 - **Memoria RAM**: Se recomienda al menos 8GB, especialmente si vas a correr LLMs localmente. Con 16GB o más tendrás una mejor experiencia. O bien, usa CodeGPT para ello.
 
 ## 🚀 Inicio Rápido
@@ -248,9 +268,27 @@ git clone https://github.com/konfio/nova-k-starter-kit.git
 cd nova-k-starter-kit
 ```
 
-### 2. Inicia los servicios
+### 2. Ejecut el script de configuración
 
-Usando Task (recomendado):
+#### En macOS
+
+```bash
+# Abre Terminal y ejecuta:
+./scripts/setup.sh
+```
+
+#### En Windows
+
+```bash
+# Abre PowerShell y ejecuta:
+bash ./scripts/setup.sh
+```
+
+El script automáticamente instalará todas las dependencias y configurará tu entorno local.
+
+### 3. Inicia los servicios
+
+Usando Task:
 
 ```bash
 task start
@@ -326,10 +364,13 @@ Aquí tienes la traducción al español, manteniendo el formato Markdown:
 ```bash
       loclx tunnel http --to localhost:3000
 ```
- -	Y desde otra terminal para n8n:
+
+- Y desde otra terminal para n8n:
+
 ```bash
       loclx tunnel http --to localhost:5678
 ```
+
 - Expande la ventana de la terminal y copia la URL con hash del tipo xxxxxxxxxx.loclx.io para compartirla
 - Los túneles expirarán después de 6 horas, por lo que puede que necesites cerrarlos y ejecutarlos nuevamente
 

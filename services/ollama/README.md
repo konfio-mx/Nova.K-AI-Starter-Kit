@@ -66,7 +66,7 @@ Ollama provides a REST API that can be accessed at `http://ollama:11434/api` fro
 
 Example API call:
 ```bash
-curl -X POST http://localhost:11434/api/generate -d '{
+curl -X POST http://ollama:11434/api/generate -d '{
   "model": "llama3",
   "prompt": "What is an AI agent?",
   "stream": false

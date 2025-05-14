@@ -1,0 +1,138 @@
+version: "3"
+
+vars:
+  DOCKER: '{{.DOCKER_COMMAND | default "docker"}}'
+  DOCKER_COMPOSE: "{{.DOCKER}} compose"
+  COMPOSE_FILES: "-f compose.yml"
+  # COMPOSE_ENV: '--env-file ./env/.env.local'
+  COMPOSE: "{{.DOCKER_COMPOSE}} {{.COMPOSE_FILES}}"
+  MAIN_SERVICE: '{{.COMPOSE_MAIN_SERVICE | default "app"}}'
+  RUN_COMMAND: run
+  EXEC_COMMAND: exec
+  RUN_ARGS: "--rm --build"
+  START_ARGS: "-it --service-ports"
+  COMPOSE_RUN: "{{.COMPOSE}} {{.RUN_COMMAND}} {{.RUN_ARGS}} {{.MAIN_SERVICE}}"
+  COMPOSE_EXEC: "{{.COMPOSE}} {{.EXEC_COMMAND}} {{.MAIN_SERVICE}}"
+
+tasks:
+  build:
+    desc: 🛠️ Build container services ...
+    dir: "{{.USER_WORKING_DIR}}"
+    cmds:
+      - echo "🛠️  Building services..."
+      - "{{.COMPOSE}} build {{.CLI_ARGS}}"
+  build:no-cache:
+    desc: 🛠️ Build container services with no cache
+    dir: "{{.USER_WORKING_DIR}}"
+    cmds:
+      - task: build
+        vars:
+          CLI_ARGS: "--no-cache"
+
+  start:
+    aliases:
+      - up
+    desc: 🚀 Start services
+    dir: "{{.USER_WORKING_DIR}}"
+    cmds:
+      - echo "🚀  Starting services... {{.CLI_ARGS}}"
+      - "{{.COMPOSE}} up -d {{.CLI_ARGS}}"
+      - "echo \"\n\""
+      - echo "Services started! 🚀"
+      - "echo \"\n\""
+      - 'echo "🌐 Access n8n at: http://localhost:5678"'
+      - 'echo "🌐 Access Open WebUI at: http://localhost:3000"'
+      - 'echo "🌐 Access QDrant Dashboard at: http://localhost:6333/dashboard"'
+
+    status:
+      - |
+        if [[ $({{.COMPOSE}} ps -q {{.SERVICE}}) ]]; then
+            exit 0
+        else
+            exit 1
+        fi
+
+  start:build:
+    dir: "{{.USER_WORKING_DIR}}"
+    desc: 🚀 🏗️ Build image and start services
+    cmds:
+      - task: up
+        vars:
+          CLI_ARGS: --build
+
+  dev:
+    aliases:
+      - watch
+    desc: 🚀  Start services in watch mode
+    dir: "{{.USER_WORKING_DIR}}"
+    cmds:
+      - "{{.COMPOSE}} up --watch"
+
+  fresh-start:
+    aliases:
+      - start:fresh
+    desc: 🚀 🛀 Fresh start container services from scratch
+    dir: "{{.USER_WORKING_DIR}}"
+    cmds:
+      - echo "🚀  🛀  Cleaning containers and restarting services ..."
+      - task: clean:containers
+      - task: start
+
+  logs:
+    desc: 🪵 View main service logs
+    dir: "{{.USER_WORKING_DIR}}"
+    deps:
+      - start
+    vars:
+      SERVICE: "{{default .MAIN_SERVICE .SERVICE}}"
+    cmds:
+      - echo "🪵  Viewing service output log..."
+      - "{{.COMPOSE}} logs -f {{.SERVICE}}"
+
+  attach:
+    desc: Attach to main service
+    dir: "{{.USER_WORKING_DIR}}"
+    deps:
+      - start
+    cmds:
+      - echo "⌨️  Attaching to container service..."
+      - "{{.COMPOSE_EXEC}} bash"
+
+  stop:
+    desc: 🛑 Stop container services
+    dir: "{{.USER_WORKING_DIR}}"
+    cmds:
+      - echo "🛑  Stopping container services..."
+      - "{{.COMPOSE}} stop"
+  down:
+    desc: 🔌 Shut down container services
+    dir: "{{.USER_WORKING_DIR}}"
+    cmds:
+      - echo  "🔌  Shutting down container services..."
+      - "{{.COMPOSE}} down"
+
+  restart:
+    desc: 🚀 Restart the application
+    dir: "{{.USER_WORKING_DIR}}"
+    aliases:
+      - refresh
+    cmds:
+      - "{{.COMPOSE}} restart"
+
+  clean:containers:
+    aliases:
+      - down:rm
+    desc: 🧼  Clean container services and resources
+    dir: "{{.USER_WORKING_DIR}}"
+    prompt: Are you sure?
+    cmds:
+      - echo  "🧼  Cleaning container services and resources..."
+      - "{{.COMPOSE}} down --rmi all --volumes"
+      - "{{.COMPOSE}} down --rmi local"
+
+  clean:all:
+    desc: 🧼  Clean everything
+    dir: "{{.USER_WORKING_DIR}}"
+    cmds:
+      - task: clean:containers
+      - task: clean:local

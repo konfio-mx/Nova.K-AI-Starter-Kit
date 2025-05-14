@@ -145,6 +145,14 @@ This starter kit includes several example agents to help you get started:
 
 Check the [examples directory](examples/) for more details on each example.
 
+## 🧩 Example n8n workflow integrating to CodeGPT API Agent
+1. Download the [n8n_flow_example_webhook.json](n8n_flow_example_webhook.json) file.
+2. Login to your n8n
+3. On top right menu "...", click to open options
+4. Import from file
+5. Select file n8n_flow_example_webhook.json and import
+6. Adjust webhook Path for Test and Production URLs
+
 ## 📖 Documentation
 
 - [First Agent Tutorial](docs/first-agent.md): Step-by-step guide to creating your first agent
@@ -346,6 +354,15 @@ Este kit incluye varios agentes de ejemplo para ayudarte a empezar:
 3. **Agente de Q&A de Documentos**: Responde preguntas basadas en contenido documental.
 
 Consulta el [directorio de ejemplos](examples/) para más detalles sobre cada uno.
+
+## 🧩 Ejemplo de flujo de trabajo en n8n integrando con un Agente de API de CodeGPT
+
+1. Descarga el archivo [n8n_flow_example_webhook.json](n8n_flow_example_webhook.json).
+2. Inicia sesión en tu instancia de n8n.
+3. En el menú superior derecho "...", haz clic para abrir las opciones.
+4. Selecciona "Importar desde archivo".
+5. Elige el archivo `n8n_flow_example_webhook.json` e impórtalo.
+6. Ajusta la ruta del webhook para las URLs de prueba y producción.
 
 ## 📖 Documentación
 

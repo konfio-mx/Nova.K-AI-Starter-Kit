@@ -29,6 +29,8 @@ tasks:
 
   pull-models:
     desc: Pull recommended LLM models for Ollama
+    deps:
+      - up
     cmds:
       - docker compose exec ollama ollama pull deepseek-r1
 

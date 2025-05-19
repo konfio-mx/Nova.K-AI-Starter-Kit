@@ -5,7 +5,7 @@ services:
     container_name: nova-k-n8n
     restart: unless-stopped
     ports:
-      - "5678:5678"
+      - "0.0.0.0:5678:5678"
     environment:
       - N8N_HOST=${N8N_HOST:-localhost}
       - N8N_PORT=5678
@@ -21,13 +21,14 @@ services:
       - DB_POSTGRESDB_USER=postgres
       - DB_POSTGRESDB_PASSWORD=postgres
       - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY:-your-secret-key}
-      - EXECUTIONS_PROCESS=main
       - EXECUTIONS_MODE=regular
       - N8N_DIAGNOSTICS_ENABLED=false
       - N8N_VERSION_NOTIFICATIONS_ENABLED=false
       - N8N_HIRING_BANNER_ENABLED=false
       - N8N_TEMPLATES_ENABLED=true
       - N8N_TEMPLATES_HOST=https://api.n8n.io/
+      - N8N_RUNNERS_ENABLED=true
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
       - GENERIC_TIMEZONE=${GENERIC_TIMEZONE:-America/Mexico_City}
     volumes:
       - ./services/n8n/data:/home/node/.n8n

@@ -1,9 +1,9 @@
 pre-commit:
   parallel: true
   commands:
-    prettier:
+    lint:prettier:fix:
       glob: "*.{json,jsonc,yaml,yml,md}"
       run: task lint:prettier:fix
-    markdown:
+    lint:markdown:fix:
       glob: "*.md"
       run: task lint:markdown:fix

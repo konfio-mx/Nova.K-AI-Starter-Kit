@@ -3,7 +3,7 @@ pre-commit:
   commands:
     prettier:
       glob: "*.{json,jsonc,yaml,yml,md}"
-      run: task lint:prettier
+      run: task lint:prettier:fix
     markdown:
       glob: "*.md"
-      run: task lint:markdown
+      run: task lint:markdown:fix

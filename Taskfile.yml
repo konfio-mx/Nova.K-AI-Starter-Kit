@@ -1,6 +1,7 @@
 version: "3"
 
-# silent: true
+silent: true
+output: prefixed
 
 dotenv:
   - .env
@@ -26,7 +27,7 @@ tasks:
     aliases:
       - config
       - install
-    deps: [install:deps, setup-env, pull-models]
+    deps: [install:deps, hooks:setup, env:setup, pull-models]
 
   install:deps:
     desc: Install dependencies
@@ -34,7 +35,13 @@ tasks:
       - echo "Installing dependencies..."
       - pnpm install
 
-  setup-env:
+  hooks:setup:
+    desc: Setup hooks
+    cmds:
+      - echo "Setting up hooks..."
+      - pnpm exec lefthook install
+
+  env:setup:
     desc: Create .env file from example
     cmds:
       - cp .env.example .env
@@ -45,6 +52,7 @@ tasks:
     deps:
       - up
     cmds:
+      - echo "Pulling LLM default model in Ollama ({{.OLLAMA_MODEL}})..."
       - docker compose exec ollama ollama pull {{.OLLAMA_MODEL}}
 
   logs:n8n:

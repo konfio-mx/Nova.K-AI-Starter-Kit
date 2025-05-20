@@ -100,3 +100,9 @@ tasks:
     cmds:
       - task: clean:all
       - task: start
+
+  git:rebase:
+    desc: "🔀 Rebase current branch"
+    dir: "{{.USER_WORKING_DIR}}"
+    cmds:
+      - git rebase origin/main --autostash --strategy-option=ours --quiet

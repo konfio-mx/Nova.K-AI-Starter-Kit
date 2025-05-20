@@ -1,23 +1,37 @@
 pre-commit:
   parallel: true
-  commands:
-    lint:prettier:fix:
+  jobs:
+    - name: lint:prettier:fix
       glob: "*.{json,jsonc,yaml,yml,md}"
       run: task lint:prettier:fix
       stage_fixed: true
-    lint:markdown:fix:
+    - name: lint:markdown:fix
       glob: "*.md"
       run: task lint:markdown:fix
       stage_fixed: true
 
-# pre-push
 pre-push:
-  commands:
-    lint:prettier:check:
+  jobs:
+    - name: lint:prettier:check
       glob: "*.{json,jsonc,yaml,yml,md}"
       run: task lint:prettier:check
       stage_fixed: true
-    lint:markdown:check:
+    - name: lint:markdown:check
       glob: "*.md"
       run: task lint:markdown:check
+      stage_fixed: true
+
+post-commit:
+  jobs:
+    - name: rebase-main
+      stage_fixed: true
+      run: task git:rebase
+      skip:
+        - merge
+        - rebase
+
+post-merge:
+  jobs:
+    - name: setup
+      run: task setup
       stage_fixed: true

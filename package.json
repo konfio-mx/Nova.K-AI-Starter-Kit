@@ -1,0 +1,9 @@
+{
+	"devDependencies": {
+		"lefthook": "^1.11.13",
+		"markdownlint-cli2": "^0.18.1"
+	},
+	"dependencies": {
+		"prettier": "^3.5.3"
+	}
+}

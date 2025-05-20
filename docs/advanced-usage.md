@@ -18,6 +18,7 @@ Knowledge-enhanced agents combine LLMs with retrieval from vector databases to p
 ### Setting Up a Knowledge Base
 
 1. **Prepare Your Documents**:
+
    - Break documents into chunks (paragraphs or sections)
    - Clean and normalize the text
 
@@ -38,6 +39,7 @@ Knowledge-enhanced agents combine LLMs with retrieval from vector databases to p
    ```
 
 3. **Generate Embeddings**:
+
    - Use the Ollama node with embedding operation
    - Or use OpenAI's embedding API
 
@@ -67,10 +69,12 @@ Knowledge-enhanced agents combine LLMs with retrieval from vector databases to p
 ### Retrieval-Augmented Generation (RAG)
 
 1. **Query Processing**:
+
    - Generate embedding for user query
    - Search vector database for relevant documents
 
 2. **Context Assembly**:
+
    - Combine retrieved documents into context
    - Format for LLM consumption
 
@@ -85,12 +89,14 @@ Complex problems often benefit from multiple specialized agents working together
 ### Agent Orchestration
 
 1. **Define Agent Roles**:
+
    - Researcher: Gathers information
    - Analyst: Processes and evaluates data
    - Writer: Generates final output
    - Critic: Reviews and suggests improvements
 
 2. **Communication Patterns**:
+
    - Sequential: Agents work in a pipeline
    - Parallel: Agents work simultaneously
    - Hierarchical: Manager agents delegate to worker agents
@@ -107,11 +113,13 @@ Empower your agents with tools to interact with external systems and perform act
 ### Tool Integration
 
 1. **Define Tool Interface**:
+
    - Name and description
    - Input parameters
    - Output format
 
 2. **Implement Tool Logic**:
+
    - Create n8n nodes for each tool
    - Handle error cases
    - Format outputs consistently
@@ -133,16 +141,16 @@ const tools = [
       properties: {
         query: {
           type: "string",
-          description: "The search query"
+          description: "The search query",
         },
         limit: {
           type: "number",
-          description: "Maximum number of results"
-        }
+          description: "Maximum number of results",
+        },
       },
-      required: ["query"]
-    }
-  }
+      required: ["query"],
+    },
+  },
 ];
 ```
 
@@ -153,10 +161,12 @@ Maintain context across multiple interactions to create more coherent agent expe
 ### Memory Types
 
 1. **Short-Term Memory**:
+
    - Store recent conversation turns
    - Include in context window for LLM
 
 2. **Long-Term Memory**:
+
    - Store key information in vector database
    - Retrieve relevant memories based on current context
 
@@ -167,10 +177,12 @@ Maintain context across multiple interactions to create more coherent agent expe
 ### Implementation
 
 1. **Session Management**:
+
    - Create unique session IDs for conversations
    - Store conversation history in PostgreSQL
 
 2. **Memory Retrieval**:
+
    - Before generating a response, fetch relevant history
    - Include in the prompt to the LLM
 
@@ -185,10 +197,12 @@ Connect your agents to existing business systems for maximum value.
 ### API Integration
 
 1. **Authentication**:
+
    - Store credentials securely in n8n
    - Use OAuth where available
 
 2. **Data Transformation**:
+
    - Convert between API formats and agent-friendly formats
    - Handle pagination and rate limiting
 
@@ -199,6 +213,7 @@ Connect your agents to existing business systems for maximum value.
 ### Database Integration
 
 1. **Query Generation**:
+
    - Use LLMs to generate SQL from natural language
    - Validate and sanitize before execution
 
@@ -213,6 +228,7 @@ Ensure your agents are efficient, responsive, and cost-effective.
 ### Prompt Optimization
 
 1. **Prompt Compression**:
+
    - Remove unnecessary details
    - Focus on relevant context
 
@@ -223,6 +239,7 @@ Ensure your agents are efficient, responsive, and cost-effective.
 ### Model Selection
 
 1. **Task-Appropriate Models**:
+
    - Use smaller models for simple tasks
    - Reserve larger models for complex reasoning
 
@@ -233,6 +250,7 @@ Ensure your agents are efficient, responsive, and cost-effective.
 ### Caching Strategies
 
 1. **Response Caching**:
+
    - Cache common queries and responses
    - Invalidate cache when knowledge changes
 

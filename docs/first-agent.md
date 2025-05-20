@@ -51,9 +51,9 @@ A simple assistant that answers questions using AI via a simple form and logs th
 1. Click the "+ Add Trigger" button
 2. Search for "Form Trigger" and select it.
 3. In the "Elements" section, click "Add Form Element".
-    - **Type**: `String`
-    - **Name / Field ID**: `question` (this is important for later steps)
-    - **Label**: `Ask your question:`
+   - **Type**: `String`
+   - **Name / Field ID**: `question` (this is important for later steps)
+   - **Label**: `Ask your question:`
 4. You can customize the "Title" and "Subtitle" of the form (e.g., Title: "Simple Q&A Bot").
 5. Click "Done". A "Form URL" will be generated and displayed. Keep this URL handy.
 
@@ -76,9 +76,9 @@ A simple assistant that answers questions using AI via a simple form and logs th
 3. Check "Keep Only Set"
 4. Click "Add Value"
 5. - Name: `response`
-    - Type: `String`
-    - Value: Click "Add Expression" and select the AI's response: `{{$node["Ollama"].json.message.content}}`
-8. Click "Done"
+   - Type: `String`
+   - Value: Click "Add Expression" and select the AI's response: `{{$node["Ollama"].json.message.content}}`
+6. Click "Done"
 
 #### Step 5: Log Question and Answer to Google Sheets
 
@@ -160,19 +160,20 @@ An assistant that reads emails, creates short summaries, and appends them to a G
 #### Step 4: Send the Summary
 
 1. Add a "Send Email" node
-1. Add a "Google Docs" node.
-2. **Authentication:** Connect your Google account as you did for Google Sheets in Use Case 1.
-3. **Configuration:**
+2. Add a "Google Docs" node.
+3. **Authentication:** Connect your Google account as you did for Google Sheets in Use Case 1.
+4. **Configuration:**
+
    - Operation: `Append Text`
    - Document ID: Create a new Google Doc (e.g., "Email Summaries"). Open it and copy its ID from the URL. Paste the ID here.
    - Text: Click "Add Expression". Combine the subject and summary. Example:
 
-     ```
+     ```plain
      ## Summary of: {{$json.subject}}
      Date: {{new Date().toLocaleDateString()}}
- 
+
      {{$node["Ollama"].json.message.content}}
- 
+
      ---
      ```
 
@@ -232,14 +233,15 @@ An assistant that can search through documents and answer questions about their 
    - Operation: `Get Content`
    - Document ID: Click "Add Expression" and select the `doc_id` from the Form Trigger: `{{$json.body.doc_id}}`
 4. **Add an "Ollama" node.**
+
    - Model: "llama3"
-   - System Prompt: "You are a helpful assistant. Answer the question based *only* on the provided document context. If the answer is not in the context, clearly state that the information is not found in the provided document."
+   - System Prompt: "You are a helpful assistant. Answer the question based _only_ on the provided document context. If the answer is not in the context, clearly state that the information is not found in the provided document."
    - Message: Click "Add Expression". You need to combine the user's question and the document content retrieved by the "Google Docs" node.
 
-     ```
+     ```plain
      Context from document:
      {{$node["Google Docs"].json.text}}
- 
+
      Based on the context above, please answer the following question:
      Question:
      {{$json.body.user_question}}
@@ -257,7 +259,7 @@ An assistant that can search through documents and answer questions about their 
 1. Save and activate your workflow
 2. Open the Form URL (from the Form Trigger node settings) in a new browser tab.
 3. Enter the Google Doc ID (from Step 1.2) and your question about the document's content.
-4. Submit the form. The assistant will provide an answer based *only* on the content of that specific Google Doc.
+4. Submit the form. The assistant will provide an answer based _only_ on the content of that specific Google Doc.
 
 ### 🌟 Ideas to Improve
 
@@ -300,20 +302,22 @@ An assistant that helps answer common customer questions using a knowledge base 
    - Options:
      - Key Row: `1` (this tells n8n that your first row contains the headers "Question" and "Answer").
 4. **Add an "Ollama" node.**
+
    - Model: "llama3"
    - System Prompt: "You are a customer support assistant. Use the provided knowledge base entries to help answer the customer's question. If the knowledge base contains relevant information, prioritize using it. If not, try to provide a helpful general answer or suggest how the user can get further help."
    - Message: Click "Add Expression". You'll combine the customer's question with the Q&A data from Google Sheets.
 
-     ```
+     ```plain
      Here is our knowledge base:
      {{ $node["Google Sheets"].json.map(item => `Q: ${item.Question}\nA: ${item.Answer}`).join('\n\n---\n\n') }}
- 
+
      Based on the knowledge base above, please answer the following customer question:
      Customer Question:
      {{ $json.body.customer_question }}
      ```
 
-     *Note: This expression assumes your Google Sheets node correctly outputs an array of items, where each item has `Question` and `Answer` properties based on your column headers. Adjust `item.Question` and `item.Answer` if your headers are different.*
+     _Note: This expression assumes your Google Sheets node correctly outputs an array of items, where each item has `Question` and `Answer` properties based on your column headers. Adjust `item.Question` and `item.Answer` if your headers are different._
+
 5. **Add a "Set" node** to format the final response.
    - Check "Keep Only Set".
    - Click "Add Value".
@@ -327,7 +331,7 @@ An assistant that helps answer common customer questions using a knowledge base 
 2. Open the Form URL (from the Form Trigger node) in a new browser tab.
 3. Enter a customer question that is similar to one in your Google Sheets knowledge base.
 4. Submit the form and review the suggested answer provided by the AI.
-5. Try asking a question that is *not* in your knowledge base to see how the assistant responds.
+5. Try asking a question that is _not_ in your knowledge base to see how the assistant responds.
 
 ### 🌟 Ideas to Improve
 

@@ -12,7 +12,8 @@ vars:
   RUN_ARGS: "--rm --build"
   START_ARGS: "-it --service-ports"
   COMPOSE_RUN: "{{.COMPOSE}} {{.RUN_COMMAND}} {{.RUN_ARGS}} {{.MAIN_SERVICE}}"
-  COMPOSE_EXEC: "{{.COMPOSE}} {{.EXEC_COMMAND}} {{.MAIN_SERVICE}}"
+  COMPOSE_EXEC: "{{.COMPOSE}} {{.EXEC_COMMAND}}"
+  COMPOSE_EXEC_MAIN: "{{.COMPOSE_EXEC}} {{.MAIN_SERVICE}}"
 
 tasks:
   build:
@@ -35,7 +36,7 @@ tasks:
     desc: 🚀 Start services
     dir: "{{.USER_WORKING_DIR}}"
     cmds:
-      - echo "🚀  Starting services... {{.CLI_ARGS}}"
+      - 'echo "🚀  Starting services... (with args: {{.CLI_ARGS}})"'
       - "{{.COMPOSE}} up -d {{.CLI_ARGS}}"
       - "echo \"\n\""
       - echo "Services started! 🚀"
@@ -66,9 +67,11 @@ tasks:
     desc: 🚀  Start services in watch mode
     dir: "{{.USER_WORKING_DIR}}"
     cmds:
-      - "{{.COMPOSE}} up --watch"
+      - task: up
+        vars:
+          CLI_ARGS: --watch
 
-  fresh-start:
+  start:fresh:
     aliases:
       - start:fresh
     desc: 🚀 🛀 Fresh start container services from scratch
@@ -87,16 +90,27 @@ tasks:
       SERVICE: "{{default .MAIN_SERVICE .SERVICE}}"
     cmds:
       - echo "🪵  Viewing service output log..."
-      - "{{.COMPOSE}} logs -f {{.SERVICE}}"
+      - "{{.COMPOSE}} logs {{.CLI_ARGS}} {{.SERVICE}}"
 
-  attach:
-    desc: Attach to main service
+  logs:all:
+    desc: 🪵 View all service logs
     dir: "{{.USER_WORKING_DIR}}"
     deps:
       - start
     cmds:
-      - echo "⌨️  Attaching to container service..."
-      - "{{.COMPOSE_EXEC}} bash"
+      - echo "🪵  Viewing all services output log..."
+      - "{{.COMPOSE}} logs {{.CLI_ARGS}}"
+
+  shell:
+    desc: Execute attached shell to service
+    dir: "{{.USER_WORKING_DIR}}"
+    deps:
+      - start
+    vars:
+      SERVICE: "{{default .MAIN_SERVICE .SERVICE}}"
+    cmds:
+      - echo "⌨️  Executing attached shell to container service {{.SERVICE}} ..."
+      - "{{.COMPOSE_EXEC}} {{.SERVICE}} sh"
 
   stop:
     desc: 🛑 Stop container services
@@ -119,20 +133,13 @@ tasks:
     cmds:
       - "{{.COMPOSE}} restart"
 
-  clean:containers:
+  clean:
     aliases:
       - down:rm
-    desc: 🧼  Clean container services and resources
+    desc: 🧼  Clean container services and resources (images, volumes, networks, etc.)
     dir: "{{.USER_WORKING_DIR}}"
-    prompt: Are you sure?
+    prompt: Are you sure? This will remove all container services, images, volumes and networks
     cmds:
       - echo  "🧼  Cleaning container services and resources..."
       - "{{.COMPOSE}} down --rmi all --volumes"
       - "{{.COMPOSE}} down --rmi local"
-
-  clean:all:
-    desc: 🧼  Clean everything
-    dir: "{{.USER_WORKING_DIR}}"
-    cmds:
-      - task: clean:containers
-      - task: clean:local

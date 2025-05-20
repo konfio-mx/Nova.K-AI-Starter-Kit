@@ -1,2 +1,7 @@
 [tools]
 node = "22"
+pnpm = "10"
+
+[env]
+_.path = ["./node_modules/.bin"]
+_.file = ['.env', 'env/.env.local']

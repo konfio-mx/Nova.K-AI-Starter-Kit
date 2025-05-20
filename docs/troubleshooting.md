@@ -4,6 +4,11 @@ This guide helps you resolve common issues you might encounter when using the No
 
 ## Docker Issues
 
+### Full Clean restart
+
+- **Solution**
+  Run `task restart:all` to remove all local data and docker's resources (containers, images, volumes, networks, etc.).
+
 ### Services Won't Start
 
 **Symptoms:**
@@ -39,7 +44,7 @@ This guide helps you resolve common issues you might encounter when using the No
 1. Check container logs:
 
    ```bash
-   docker-compose logs [service-name]
+   task logs:[service-name] # ex. `task logs:openwebui or task logs:n8n`
    ```
 
 2. Verify file permissions:
@@ -66,9 +71,11 @@ This guide helps you resolve common issues you might encounter when using the No
 **Solutions:**
 
 1. Check if workflow is activated:
+
    - In n8n UI, ensure the toggle is set to "Active"
 
 2. Verify webhook URL:
+
    - Make sure you're using the correct URL format
    - Check if the webhook node is configured correctly
 
@@ -88,10 +95,12 @@ This guide helps you resolve common issues you might encounter when using the No
 **Solutions:**
 
 1. Check node configuration:
+
    - Verify all required fields are filled
    - Check expression syntax for errors
 
 2. Test API connections:
+
    - Use the "Test API Call" button where available
    - Check credentials and API keys
 
@@ -132,9 +141,11 @@ This guide helps you resolve common issues you might encounter when using the No
 **Solutions:**
 
 1. Use a smaller model:
+
    - Try models like `phi` or `mistral` instead of larger ones
 
 2. Adjust batch size and context settings:
+
    - Lower values use less memory but may be slower
 
 3. Check system resources:
@@ -179,6 +190,7 @@ This guide helps you resolve common issues you might encounter when using the No
 **Solutions:**
 
 1. Verify collection configuration:
+
    - Ensure vector dimensions match your embedding model
    - Check for duplicate collection names
 
@@ -222,6 +234,7 @@ This guide helps you resolve common issues you might encounter when using the No
    ```
 
 2. Check the environment variables in docker-compose.yml:
+
    - Ensure `OLLAMA_API_BASE_URL` is set correctly
 
 3. Restart both services:
@@ -242,6 +255,7 @@ This guide helps you resolve common issues you might encounter when using the No
 **Solutions:**
 
 1. Use "Debug" nodes to inspect data:
+
    - Add a Debug node after problematic nodes
    - Check the output format
 

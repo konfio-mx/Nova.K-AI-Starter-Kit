@@ -1,6 +1,6 @@
 version: "3"
 
-silent: true
+# silent: true
 
 dotenv:
   - .env
@@ -9,17 +9,30 @@ env:
   DOCKER_COMMAND: docker # here you can set "podman", for example
   COMPOSE_MAIN_SERVICE: n8n
 
+vars:
+  OLLAMA_MODEL: deepseek-r1:1.5b
+
 includes:
   main:
     taskfile: ./.taskfiles/docker.Taskfile.yml
     flatten: true
     dir: "{{.USER_WORKING_DIR}}"
+  lint:
+    taskfile: ./.taskfiles/lint.Taskfile.yml
+    dir: "{{.USER_WORKING_DIR}}"
 
 tasks:
   setup:
+    aliases:
+      - config
+      - install
+    deps: [install:deps, setup-env, pull-models]
+
+  install:deps:
+    desc: Install dependencies
     cmds:
-      - task: pull-models
-      - task: setup-env
+      - echo "Installing dependencies..."
+      - pnpm install
 
   setup-env:
     desc: Create .env file from example
@@ -32,56 +45,50 @@ tasks:
     deps:
       - up
     cmds:
-      - docker compose exec ollama ollama pull deepseek-r1
+      - docker compose exec ollama ollama pull {{.OLLAMA_MODEL}}
 
-  # start:
-  #   desc: Start all services
-  #   aliases:
-  #     - up
-  #     - run
-  #   cmds:
-  #     - docker-compose up -d
-  #     - "echo \"\n\""
-  #     - echo "Services started! 🚀"
-  #     - "echo \"\n\""
-  #     - 'echo "🌐 Access n8n at: http://localhost:5678"'
-  #     - 'echo "🌐 Access Open WebUI at: http://localhost:3000"'
-  #     - 'echo "🌐 Access QDrant Dashboard at: http://localhost:6333/dashboard"'
+  logs:n8n:
+    desc: Show logs for n8n
+    cmds:
+      - task: logs
+        vars:
+          SERVICE: "n8n"
 
-  # stop:
-  #   desc: Stop all services
-  #   cmds:
-  #     - docker-compose down
+  logs:ollama:
+    desc: Show logs for ollama
+    cmds:
+      - task: logs
+        vars:
+          SERVICE: "ollama"
 
-  # restart:
-  #   desc: Restart all services
-  #   cmds:
-  #     - docker-compose restart
+  logs:postgres:
+    desc: Show logs for postgres
+    cmds:
+      - task: logs
+        vars:
+          SERVICE: "postgres"
 
-  # logs:
-  #   desc: Show logs from all services
-  #   cmds:
-  #     - docker-compose logs -f
-
-  # logs:n8n:
-  #   desc: Show logs from n8n service
-  #   cmds:
-  #     - task: logs
-  #       vars:
-  #         CLI_ARGS: SERVICE=n8n
-
-  # ollama-logs:
-  #   desc: Show logs from ollama service
-  #   cmds:
-  #     - docker compose logs -f ollama
-
-  # clean:
-  #   desc: Remove all containers and volumes
-  #   cmds:
-  #     - docker compose down -v
-  #     - echo "All containers and volumes removed"
+  logs:qdrant:
+    desc: Show logs for qdrant
+    cmds:
+      - task: logs
+        vars:
+          SERVICE: "qdrant"
 
   clean:data:
     desc: Remove service's data
     cmds:
+      - echo "Removing service's data..."
       - rm -rf ./services/**/data/**
+
+  clean:all:
+    desc: Remove all containers, volumes and data
+    cmds:
+      - task: clean
+      - task: clean:data
+
+  restart:all:
+    desc: Restart all services
+    cmds:
+      - task: clean:all
+      - task: start

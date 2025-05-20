@@ -1,0 +1,33 @@
+version: "3"
+
+vars:
+  PRETTIER_FILES: "**/*.{json,jsonc,yaml,yml,md}"
+  PRETTIER_DEFAULT_ARGS: "--ignore-unknown --no-error-on-unmatched-pattern --log-level=warn"
+  MARKDOWN_FILES: "**/*.md"
+  MARKDOWNLINT_DEFAULT_ARGS: "--quiet"
+
+tasks:
+  default:
+    deps: [prettier:check, markdown:check]
+  fix:
+    deps: [prettier:fix, markdown:fix]
+
+  prettier:check:
+    desc: Check formatting with Prettier
+    cmds:
+      - pnpm exec prettier --check {{.PRETTIER_FILES}} {{.PRETTIER_DEFAULT_ARGS}}
+
+  prettier:fix:
+    desc: Fix formatting with Prettier
+    cmds:
+      - pnpm exec prettier --write {{.PRETTIER_FILES}} {{.PRETTIER_DEFAULT_ARGS}}
+
+  markdown:check:
+    desc: Check markdown files with markdownlint-cli2
+    cmds:
+      - pnpm exec markdownlint-cli2 {{.MARKDOWNLINT_DEFAULT_ARGS}} {{.MARKDOWN_FILES}}
+
+  markdown:fix:
+    desc: Fix markdown files with markdownlint-cli2
+    cmds:
+      - pnpm exec markdownlint-cli2 {{.MARKDOWNLINT_DEFAULT_ARGS}} --fix {{.MARKDOWN_FILES}}

@@ -19,16 +19,19 @@ If you need to add custom n8n nodes, you can place them in a `custom` directory 
 ## Useful Commands
 
 - View n8n logs:
+
   ```bash
   docker-compose logs -f n8n
   ```
 
 - Access n8n shell:
+
   ```bash
   docker-compose exec n8n /bin/sh
   ```
 
 - Backup workflows:
+
   ```bash
   docker-compose exec n8n n8n export:workflow --all --output=/home/node/.n8n/backups/workflows.json
   ```

@@ -22,7 +22,6 @@
 
 ---
 
-
 # 🚀 Nova.K AI Agent Starter Kit
 
 > ## Leer versión en [Español](#español)
@@ -146,6 +145,7 @@ This starter kit includes several example agents to help you get started:
 Check the [examples directory](examples/) for more details on each example.
 
 ## 🧩 Example n8n workflow integrating to CodeGPT API Agent
+
 1. Download the [n8n_flow_example_webhook.json](n8n_flow_example_webhook.json) file.
 2. Login to your n8n
 3. On top right menu "...", click to open options
@@ -160,22 +160,27 @@ Check the [examples directory](examples/) for more details on each example.
 - [Advanced Usage](docs/advanced-usage.md): Taking your agents to the next level
 
 ## :speech_balloon: Integrating Open Web UI with your n8n Workflow and/or agent
-- Copy this Python file code [n8n.py](n8n.py)
+
+- Copy this Python file code [n8n.py](scripts/n8n.py)
 - Go to your profile (must be admin) in Open Web UI [http://localhost:3000](http://localhost:3000)
 - Click on Settings
 - Go to Admin Settings
 - On top menu, click on Functions
 - Click on "+" at the top right to add new Function
 - Provide a name and description for the Function
-- Replace all code, with the Python code you copied from [n8n.py](n8n.py)
+- Replace all code, with the Python code you copied from [n8n.py](scripts/n8n.py)
 - Replace the line of the code with your N8N webhook name to your production URL from n8n workflow
+
   ```python
     default="http://host.docker.internal:5678/webhook/{your N8N webhook name}"
   ```
+
   ```python
     i.e. default="http://host.docker.internal:5678/webhook/incoming_request_for_my_agent_and_workflow"
   ```
+
 - Replace the temporary request message for your agent name
+
  ```python
   -> Optional[dict]:
         await self.emit_status(
@@ -185,6 +190,7 @@ Check the [examples directory](examples/) for more details on each example.
             False,
         )
 ```
+
 ```python
   -> Optional[dict]:
         await self.emit_status(
@@ -194,6 +200,7 @@ Check the [examples directory](examples/) for more details on each example.
             False,
         )
 ```
+
 - Click Save at the bottom right
 - On the top right, click on enable function dial to activate model in Open Web UI
 - Now you can start a new chat, and select in the top left the Model

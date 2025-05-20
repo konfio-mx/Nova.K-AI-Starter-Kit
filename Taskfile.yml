@@ -83,10 +83,22 @@ tasks:
         vars:
           SERVICE: "qdrant"
 
+  backup:data:
+    desc: Create backup of service's data
+    cmds:
+      - echo "Creating backup of service's data..."
+      - |
+        timestamp=$(date +%Y%m%d_%H%M%S)
+        backup_dir="./.backups/data_${timestamp}"
+        mkdir -p "${backup_dir}"
+        cp -R ./services ${backup_dir}
+        echo "Backup created in ${backup_dir}"
+
   clean:data:
     desc: Remove service's data
     cmds:
       - echo "Removing service's data..."
+      - task: backup:data
       - rm -rf ./services/**/data/**
 
   clean:all:

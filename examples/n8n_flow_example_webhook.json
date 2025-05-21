@@ -1,5 +1,5 @@
 {
-  "name": "Thistledown Agent",
+  "name": "T{your agent workflow name",
   "nodes": [
     {
       "parameters": {
@@ -40,7 +40,7 @@
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "invoke_codegpt_agent_thistledown",
+        "path": "{your production path",
         "responseMode": "responseNode",
         "options": {}
       },
@@ -60,7 +60,7 @@
           "parameters": [
             {
               "name": "CodeGPT-Org-Id",
-              "value": "f2f944b1-eb90-4db2-b0a4-1dc7e315718c"
+              "value": "{your org id}"
             },
             {
               "name": "accept",
@@ -78,14 +78,14 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"agentId\": \"e29d69cf-fdb1-419f-877f-f47a2797a060\",\n  \"messages\": [\n    {\n      \"content\": \"{{ $json?.chatInput || $json.body.chatInput }}\",\n      \"role\": \"user\"\n    }\n  ],\n  \"format\": \"json\",\n  \"stream\": false\n}",
+        "jsonBody": "={\n  \"agentId\": \"{your agent id}\",\n  \"messages\": [\n    {\n      \"content\": \"{{ $json?.chatInput || $json.body.chatInput }}\",\n      \"role\": \"user\"\n    }\n  ],\n  \"format\": \"json\",\n  \"stream\": false\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [460, 120],
       "id": "2c16a1ac-b032-4de6-a472-f4dec61a13b4",
-      "name": "CodeGPT Agent: Ask to Wizard Thistledown Waggletuft"
+      "name": "CodeGPT Agent"
     },
     {
       "parameters": {
@@ -174,7 +174,7 @@
       "main": [
         [
           {
-            "node": "CodeGPT Agent: Ask to Wizard Thistledown Waggletuft",
+            "node": "CodeGPT Agent",
             "type": "main",
             "index": 0
           }

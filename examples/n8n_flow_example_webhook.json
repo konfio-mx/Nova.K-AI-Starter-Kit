@@ -68,7 +68,7 @@
             },
             {
               "name": "authorization",
-              "value": "Bearer sk-f58ceb69-58b7-46f7-9983-78393b1c7059"
+              "value": "Bearer {YOUR API KEY}"
             },
             {
               "name": "content-type",
